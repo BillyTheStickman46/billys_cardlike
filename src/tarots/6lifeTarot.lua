@@ -6,11 +6,8 @@ SMODS.Consumable {
     cost = 3,
     unlocked = true,
     
-    -- Added 'growth' to the config so it can be easily adjusted
-    config = { extra = { percent = 0, growth = 15 } },
+    config = { extra = { percent = 0, growth = 20 } },
     
-    -- Now passing both the current percent AND the growth rate to localization
-    -- In your en-us.lua, you can write: "Grows {2}% at end of round. Current: {1}%"
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.percent, card.ability.extra.growth } }
     end,
@@ -18,7 +15,6 @@ SMODS.Consumable {
     calculate = function(self, card, context)
         if context.end_of_round and not context.individual and not context.repetition then
             if card.ability.extra.percent < 100 then
-                -- Uses the growth variable instead of a hardcoded 10
                 card.ability.extra.percent = math.min(100, card.ability.extra.percent + card.ability.extra.growth)
                 return {
                     message = card.ability.extra.percent .. '%',
@@ -29,14 +25,11 @@ SMODS.Consumable {
     end,
 
     can_use = function(self, card)
-        -- Normal use: If it reached 100%, you can use it anywhere
         if card.ability.extra.percent >= 100 then
             return true
         end
         
-        -- Booster Pack use: Allow "using" it from a pack to move it to your inventory
         if card.area == G.pack_cards then
-            -- But only if you actually have an open consumable slot!
             if #G.consumeables.cards < G.consumeables.config.card_limit then
                 return true
             end
@@ -46,38 +39,27 @@ SMODS.Consumable {
     end,
 
     use = function(self, card, area, copier)
-        -- If used before 100% (meaning it was clicked inside an Arcana pack),
-        -- bypass the rewards and spawn a copy into the consumable slots instead.
         if card.ability.extra.percent < 100 then
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 0.4,
                 func = function()
                     play_sound('tarot1')
-                    -- 'card.config.center.key' safely gets this exact custom card's internal ID
                     local new_card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, card.config.center.key)
                     new_card:add_to_deck()
                     G.consumeables:emplace(new_card)
                     return true
                 end
             }))
-            -- IMPORTANT: Return early so the reward logic below doesn't run!
             return 
         end
-
-        -- =========================================================
-        -- THE 100% REWARD LOGIC CONTINUES BELOW
-        -- =========================================================
         
-        -- 1. Base options that don't require specific slot space
         local options = {'money', 'enhanced', 'edition', 'seal'}
 
-        -- 2. Check if we have at least 1 open Joker slot
         if #G.jokers.cards < G.jokers.config.card_limit then
             table.insert(options, 'jokers')
         end
 
-        -- 3. Check if we have at least 1 open Consumable slot.
         local consumable_space = G.consumeables.config.card_limit - #G.consumeables.cards
         if card.area == G.consumeables then
             consumable_space = consumable_space + 1

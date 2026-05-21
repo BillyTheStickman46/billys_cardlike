@@ -9,6 +9,6 @@
 	"badge_colour": "666665",
     "badge_text_colour": "FF0000",
     "main_file": "main.lua",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon_path": "mod_icon.png"
 }

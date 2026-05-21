@@ -3,8 +3,8 @@ SMODS.Enhancement {
     atlas = 'cardsAtlas',
     pos = { x = 0, y = 6 },
     config = {
-        bonus = 15,
-        mult = 2
+        bonus = 20,
+        mult = 3
     },
     in_shop = true,
     weight = 1,
