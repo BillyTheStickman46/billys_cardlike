@@ -1,0 +1,14 @@
+{
+    "id": "BillysCardlikeMod",
+    "name": "billy's cardlike mod",
+	"display_name": "billy's cardlike mod",
+    "author": ["BillyTheStickman"],
+    "description": "cool new cards lol",
+    "prefix": "btspf",
+	"priority": 0,
+	"badge_colour": "666665",
+    "badge_text_colour": "FF0000",
+    "main_file": "main.lua",
+    "version": "1.0.2",
+    "icon_path": "mod_icon.png"
+}
